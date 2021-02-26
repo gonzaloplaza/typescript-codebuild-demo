@@ -29,6 +29,7 @@ LABEL Maintainer="Gonzalo Plaza <gonzalo@verize.com>" \
 
 ENV PORT=3000
 ENV NGINX_PORT=8080
+ENV NODE_ENV=production
 
 # Install Alpine dependencies
 RUN apk --no-cache add nginx supervisor curl && \
@@ -47,6 +48,7 @@ WORKDIR /app
 COPY package.json package-lock.json /app/
 
 # Install production Node dependencies
+RUN npm install -g npm@latest
 RUN npm -v
 RUN npm install --production
 
