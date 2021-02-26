@@ -9,10 +9,6 @@
     "test": "jest --detectOpenHandles",
     "coverage": "jest --coverage --detectOpenHandles"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gonzaloplaza/typescript-codebuild-demo.git"
-  },
   "keywords": [
     "typescript",
     "express",
