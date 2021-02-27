@@ -13,4 +13,5 @@ coverage
 build
 dist
 coverage
+release_version
 

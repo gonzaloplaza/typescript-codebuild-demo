@@ -14,6 +14,10 @@ phases:
         - echo Running tests with coverage report
         - npm audit
         - npm run coverage
+    post_build:
+      commands:
+        - echo Detected commit hash $CODEBUILD_RESOLVED_SOURCE_VERSION
+        - echo $CODEBUILD_RESOLVED_SOURCE_VERSION > release_version
 artifacts:
     files:
       - '**/*'

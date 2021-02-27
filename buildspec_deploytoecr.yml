@@ -2,22 +2,29 @@ version: 0.2
 
 phases:
     install:
+        runtime-versions:
+            docker: 19
         commands:
             - echo Build initiated by $CODEBUILD_INITIATOR
             - echo Starting build from source repository - $CODEBUILD_SOURCE_REPO_URL
             - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-            # ECR repository name must be the same as code repository name
-            - ECR_REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/typescript-codebuild-demo
+            # ECR repository name should be created in AWS Elastic Container Repository
+            - ECR_REPOSITORY_NAME=typescript-codebuild-demo
+            - ECR_REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME
     build:
         commands:
             - echo Logging in to Amazon ECR...
             - aws --version
             - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
+            # Get latest commit hash from file generated in preovious stage
+            - CODEBUILD_RESOLVED_SOURCE_VERSION=$(cat ./release_version)
+            - Selected commit hash from build stage is $CODEBUILD_RESOLVED_SOURCE_VERSION
+            - echo Building the Docker image...
             - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
             - IMAGE_TAG=${COMMIT_HASH:=latest}
+            - echo Created version tag $IMAGE_TAG
         finally:
             - echo Build started on `date`
-            - echo Building the Docker image...
             - docker build -t $ECR_REPOSITORY_URI:latest .
             - docker tag $ECR_REPOSITORY_URI:latest $ECR_REPOSITORY_URI:$IMAGE_TAG
     post_build:
@@ -26,6 +33,7 @@ phases:
             - echo Pushing the Docker images to $AWS_DEFAULT_REGION region ...
             - docker push $ECR_REPOSITORY_URI:latest
             - docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
+            - echo Pushed image to ECR $ECR_REPOSITORY_URI:$IMAGE_TAG
             - echo Writing image definitions file...
             - printf '[{"name":"%s","imageUri":"%s"}]' $AWS_REPOSITORY_NAME $ECR_REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 artifacts:
