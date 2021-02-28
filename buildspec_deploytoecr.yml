@@ -17,10 +17,11 @@ phases:
             - aws --version
             - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
             # Get latest commit hash from file generated in preovious stage
-            - CODEBUILD_RESOLVED_SOURCE_VERSION=$(cat ./release_version)
-            - Selected commit hash from build stage is $CODEBUILD_RESOLVED_SOURCE_VERSION
+            - ls -la
+            - SOURCE_VERSION_COMMIT=`cat release_version`
+            - Selected commit hash from build stage is $SOURCE_VERSION_COMMIT
             - echo Building the Docker image...
-            - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+            - COMMIT_HASH=$(echo $SOURCE_VERSION_COMMIT | cut -c 1-7)
             - IMAGE_TAG=${COMMIT_HASH:=latest}
             - echo Created version tag $IMAGE_TAG
         finally:
