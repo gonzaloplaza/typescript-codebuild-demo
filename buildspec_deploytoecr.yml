@@ -11,13 +11,14 @@ phases:
             # ECR repository name should be created in AWS Elastic Container Repository
             - ECR_REPOSITORY_NAME=typescript-codebuild-demo
             - ECR_REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME
+
     build:
         commands:
             - echo Logging in to Amazon ECR...
             - aws --version
             - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
             # Get latest commit hash from file generated in preovious stage
-            - Selected commit hash from build stage is $COMMIT_ID
+            - echo Selected commit hash from build stage is $COMMIT_ID
             - echo Building the Docker image...
             - COMMIT_HASH=$(echo $COMMIT_ID | cut -c 1-7)
             - IMAGE_TAG=${COMMIT_HASH:=latest}
