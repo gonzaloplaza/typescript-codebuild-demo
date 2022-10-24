@@ -1,4 +1,4 @@
-FROM node:14-alpine AS ts-build
+FROM node:19-alpine AS ts-build
 
 LABEL Maintainer="Gonzalo Plaza <gonzalo@verize.com>" \
       Description="Lightweight container with Nginx 1.16 & Node 14 based on Alpine Linux"
@@ -22,7 +22,7 @@ COPY tsconfig.json /app
 RUN npm run build
 
 
-FROM node:14-alpine
+FROM node:19-alpine
 
 LABEL Maintainer="Gonzalo Plaza <gonzalo@verize.com>" \
       Description="Lightweight container with Nginx 1.16 & Node 14 based on Alpine Linux"
